@@ -37,3 +37,19 @@
   </script>
 ```
 
+
+
+### scss
+
+许在vscode 安装插件  ` Live Sass Compiler`,并在settings.json里添加配置
+
+```json
+  "liveSassCompile.settings.formats": [
+    {
+      "format": "expanded", // 输出格式
+      "extensionName": ".css",
+      "savePath": "~/css" // 保存路径
+    }
+  ]
+```
+
