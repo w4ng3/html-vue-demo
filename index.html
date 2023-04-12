@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="https://unpkg.com/vue@next"></script>
+  <script src="https://unpkg.com/vue-router@4"></script>
+  <link rel="stylesheet" href="./style/css/style.css" />
+  <title>WD</title>
+</head>
+
+<body>
+  <div id="app">
+    <router-view></router-view>
+  </div>
+
+  <!-- 首页 -->
+  <script type="text/x-template" id="home-template">
+    <div class="wrapper">
+      <!-- top -->
+      <div class="wrapper__top"> 
+        <img src="./images/back.png" class="wrapper__top--back">
+        <div class="wrapper__top--title">
+          <img src="./images/icon.png" class="wrapper__top--icon">
+          <span> Buy MATCH</span>
+        </div>
+        <img src="./images/icon-time.png" class="wrapper__top--right">
+      </div>
+
+      <!-- center -->
+      <div class="wrapper__center flex-1">
+        <div>
+          <span class="wrapper__center--by">
+            <span>By Amount</span> 
+            <img src="./images/switch.png" class="wrapper__center--icon">
+          </span>
+        </div>
+        <div :class="['currentValue',{ 'value-active': isActive }]">{{intValue}}</div>
+        <div class="wrapper__center--tips">{{tips}}</div>
+        <div class="scope-prompt">150 ~ 2000 HKD</div>
+      </div>
+      <!-- 模拟键盘 -->
+      <div class="num-container">
+        <div
+          class="num-item"
+          v-for="(number, index) in numbersKey"
+          :key="index"
+          @click="handleNumClick(number)"
+        >
+          {{ number }}
+        </div>
+        <div class="num-item" @click="clearNum">x</div>
+      </div>
+      <!-- 按钮 -->
+      <router-link :to="{ path: `/about/${intValue}`}">
+        <button :disabled="!isActive" :class="['next-btn',{ 'next-btn-active': isActive }]">NEXT</button>
+      </router-link>
+    </div>
+  </script>
+  <script>
+    const Home = {
+      setup() {
+        const { reactive, toRefs, ref, computed } = Vue;
+        const numbersKey = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '.', '0'];
+        const stringValue = ref('0')
+        const tips = ref('')
+        const isActive = ref(false) // 值是否在允许范围之内
+
+        // 点击数字字符
+        const handleNumClick = (number) => {
+          if (number == '.') return // 小数点暂时不会处理
+          stringValue.value = stringValue.value + number
+        }
+        // 监听变量 ,转换成 int
+        const intValue = computed(() => {
+          let num = parseInt(stringValue.value);
+          // 改变颜色、改变提示
+          if (num < 150) {
+            tips.value = '最小购买150HKD'
+            isActive.value = false
+          } else if (num > 2000) {
+            tips.value = '最大购买2000'
+            isActive.value = false
+          } else {
+            tips.value = ''
+            isActive.value = true
+          }
+          return num;
+        });
+        // 清除输入
+        const clearNum = () => {
+          stringValue.value = '0'
+        }
+
+        return {
+          stringValue,
+          intValue,
+          numbersKey,
+          tips,
+          isActive,
+          handleNumClick,
+          clearNum
+        };
+      },
+      template: '#home-template',
+    };
+  </script>
+  <!-- 首页 -->
+
+  <!-- 下一页 -->
+  <script type="text/x-template" id="about-template">
+    <div class="wrapper">
+      <h1> {{val}}</h1>
+      <div>You will get about 22.46 MATIC</div>
+      <!-- 按钮 -->
+      <button :class="['next-btn',{ 'next-btn-active': true }]">NEXT</button>
+    </div>
+  </script>
+  <script>
+    const About = {
+      setup() {
+        const { reactive, ref, onMounted } = Vue;
+        const { useRoute } = VueRouter
+        const route = useRoute();
+        const val = ref(0)
+        onMounted(() => {
+          val.value = route.params.num
+        })
+        return {
+          val
+        };
+      },
+      template: '#about-template',
+    };
+  </script>
+  <!-- 下一页 -->
+
+  <!-- main.js -->
+  <script>
+    const APP = {
+      setup() {
+        return {
+        }
+      },
+    };
+    // 1. 引入组件：Home,About
+    // 2. 定义一些路由
+    const routes = [
+      { path: "/", component: Home },
+      { path: "/about/:num", component: About },
+    ];
+
+    // 3. 创建路由实例并传递 `routes` 配置
+    const router = VueRouter.createRouter({
+      history: VueRouter.createWebHashHistory(),
+      routes,
+    });
+
+    // 4. 创建并挂载根实例
+    const app = Vue.createApp(APP);
+    //确保 _use_ 路由实例使整个应用支持路由。
+    app.use(router);
+    app.mount("#app");
+  </script>
+  <!-- main.js -->
+</body>
+
+</html>
