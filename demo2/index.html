@@ -9,10 +9,9 @@
   <script src="https://unpkg.com/vue@3"></script>
   <script src="https://unpkg.com/element-plus"></script>
   <script src="https://unpkg.com/vue-router@4"></script>
-  <!-- <script src="https://unpkg.com/@element-plus/icons-vue"></script> -->
   <script src="https://cdn.bootcss.com/qs/6.11.0/qs.min.js"></script>
   <script src="https://unpkg.com/axios"></script>
-  <script src="./httpRequest.js"></script>
+  <script src="./utils/httpRequest.js"></script>
   <link rel="stylesheet" href="./style/css/style.css" />
   <title>笔记</title>
 </head>
@@ -68,115 +67,10 @@
       <button  class="next-btn">打开app</button>
     </div>
   </script>
-  <script>
-    const Home = {
-      setup() {
-        const { reactive, toRefs, ref, computed, onMounted } = Vue;
-        const { useRoute } = VueRouter
-        const route = useRoute()
-
-        onMounted(() => {
-          let param = route.query.param
-          console.log('param', param);
-          // let decodedData = window.atob(param) //base64解密
-          // ----------------
-          apiget(`/note/getShareNote?params=${param}`, {}).then(res => {
-            if (res.code == 0) {
-              console.log('数据：', res.data);
-              let data = res.data
-              note.nickname = data.nickname
-              note.avatar = data.avatar
-              note.time = TimestampToDate(data.timestamp)
-              note.noteId = data.noteId
-              note.content = data.content
-              note.resourceList = data.resourceList
-              note.title = data.title
-            }
-          }).catch(err => { alert('网络错误') })
-        })
-        const note = reactive({
-
-          nickname: '',
-          avatar: '',
-          time: '',
-          noteId: 0,
-          content: "",
-          // 资源：0图片，1视频
-          resourceList: [],
-          title: ""
-        })
-
-        // 时间戳转时间
-        function TimestampToDate(Timestamp) {
-          let date1 = new Date(Timestamp);
-          return date1.toLocaleDateString().replace(/\//g, "-") + " " + date1.toTimeString().substr(0, 8);
-        }
-
-        // 全屏幕播放
-        const btnFullVideo = (id) => {
-          const elVideo = document.getElementById(id);
-          if (elVideo.requestFullscreen) {
-            elVideo.requestFullscreen()
-            elVideo.play()
-          }
-          else if (elVideo.webkitRequestFullScreen) {
-            elVideo.webkitRequestFullScreen()
-            elVideo.play()
-          } else if (elVideo.mozRequestFullScreen) {
-            elVideo.mozRequestFullScreen()
-            elVideo.play()
-          } else {
-            elVideo.play()
-          }
-        }
-        // 退出全屏停止
-        const fullscreenchange = (id) => {
-          const video = document.getElementById(id);
-          if (!document.webkitIsFullScreen) {
-            video.pause()
-          }
-
-        }
-
-        return {
-          note,
-          btnFullVideo,
-          fullscreenchange
-        };
-      },
-      template: '#home-template',
-    };
-  </script>
   <!-- 首页 -->
-
+  <script src="./comp/home.js"></script>
   <!-- main.js -->
-  <script>
-    const APP = {
-      setup() {
-        return {
-        }
-      },
-    };
-    // 1. 引入组件：Home,About
-    // 2. 定义一些路由
-    const routes = [
-      { path: "/", component: Home },
-    ];
-
-    // 3. 创建路由实例并传递 `routes` 配置
-    const router = VueRouter.createRouter({
-      history: VueRouter.createWebHashHistory(),
-      routes,
-    });
-
-    // 4. 创建并挂载根实例
-    const app = Vue.createApp(APP);
-    //确保 _use_ 路由实例使整个应用支持路由。
-    app.use(router);
-    app.use(ElementPlus)
-    app.mount("#app");
-  </script>
-  <!-- main.js -->
+  <script src="./main.js"></script>
 </body>
 
 </html>
