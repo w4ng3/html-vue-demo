@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="//unpkg.com/element-plus/dist/index.css" />
+  <script src="//unpkg.com/vue@3"></script>
+  <script src="//unpkg.com/element-plus"></script>
+  <script src="//unpkg.com/vue-router@4"></script>
+  <script src="//cdn.bootcss.com/qs/6.11.0/qs.min.js"></script>
+  <script src="//unpkg.com/axios"></script>
+  <script src="./utils/httpRequest.js"></script>
+  <link rel="stylesheet" href="./style/style.css" />
+  <title>开门</title>
+</head>
+
+<body>
+  <div id="app">
+    <router-view></router-view>
+  </div>
+
+  <!-- 首页 -->
+  <script type="text/x-template" id="home-template">
+    <div class="wrapper">
+      <el-image
+        style="width: 100%; height: 200px;border-radius: 10px;"
+        src="https://fuss10.elemecdn.com/1/34/19aa98b1fcb2781c4fba33d850549jpeg.jpeg" 
+      />
+      <p class="p-center">二十四小时智能服务</p>
+      <el-form
+        v-if="status==='register'"
+        ref="form"
+        :model="formData"
+        :rules="formRules"
+        label-position="left"
+        label-width="70px"
+        class="mt-50"
+      >
+        <el-form-item label="手机号" prop="mobile">
+          <el-input placeholder="请输入手机号" type="number" v-model="formData.mobile" style="width: 100%;"></el-input>
+        </el-form-item>
+
+        <el-form-item label="验证码" prop="verificationCode" inline>
+          <el-input placeholder="请输入验证码" v-model="formData.verificationCode" class="code-input"></el-input>
+          <div class="flex-1"></div>
+          <el-button type="success" class="code-btn" :disabled="countDown > 0" @click="getVerificationCode">
+            {{ countDown > 0 ? `${countDown}s后重新获取` : '获取验证码' }}
+          </el-button>
+        </el-form-item>
+
+        <!-- <el-checkbox v-model="agreeTerms">阅读并同意《二十四小时智能服务条款》</el-checkbox> -->
+
+        <el-button class="next-btn" type="success" @click="submitForm">
+          确定
+        </el-button>
+      </el-form>
+      <!-- 开门 成功/失败 -->
+      <div v-else-if="status==='success'" class="open-warpper">
+        <img src="data:image/svg+xml;utf8,%3Csvg%20class%3D%22icon%22%20style%3D%22width%3A%201em%3Bheight%3A%201em%3Bvertical-align%3A%20middle%3Bfill%3A%20currentColor%3Boverflow%3A%20hidden%3B%22%20viewBox%3D%220%200%201024%201024%22%20version%3D%221.1%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20d%3D%22M512.9%20511.1m-447.4%200a447.4%20447.4%200%201%200%20894.8%200%20447.4%20447.4%200%201%200-894.8%200Z%22%20fill%3D%22%230EC469%22%20%2F%3E%3Cpath%20d%3D%22M257.8%20493.6s62.9%20146.8%20160.8%20146.8c94.4%200%20381.1-333.7%20381.1-333.7S521.1%20761.6%20427.9%20761.6c-77.5%200-133.4-110.7-170.1-268z%22%20fill%3D%22%23FFFFFF%22%20%2F%3E%3C%2Fsvg%3E" alt="" class="open--icon">
+        <el-text type="success" size="large">开门成功</el-text>
+      </div>
+      <div v-else-if="status==='fail'" class="open-warpper">
+        <img src="data:image/svg+xml;utf8,%3Csvg%20class%3D%22icon%22%20style%3D%22width%3A%201em%3Bheight%3A%201em%3Bvertical-align%3A%20middle%3Bfill%3A%20currentColor%3Boverflow%3A%20hidden%3B%22%20viewBox%3D%220%200%201024%201024%22%20version%3D%221.1%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20d%3D%22M512%20512m-448%200a448%20448%200%201%200%20896%200%20448%20448%200%201%200-896%200Z%22%20fill%3D%22%23FA5151%22%20%2F%3E%3Cpath%20d%3D%22M557.3%20512l113.1-113.1c12.5-12.5%2012.5-32.8%200-45.3s-32.8-12.5-45.3%200L512%20466.7%20398.9%20353.6c-12.5-12.5-32.8-12.5-45.3%200s-12.5%2032.8%200%2045.3L466.7%20512%20353.6%20625.1c-12.5%2012.5-12.5%2032.8%200%2045.3%206.2%206.2%2014.4%209.4%2022.6%209.4s16.4-3.1%2022.6-9.4L512%20557.3l113.1%20113.1c6.2%206.2%2014.4%209.4%2022.6%209.4s16.4-3.1%2022.6-9.4c12.5-12.5%2012.5-32.8%200-45.3L557.3%20512z%22%20fill%3D%22%23FFFFFF%22%20%2F%3E%3C%2Fsvg%3E" alt="" class="open--icon">
+        <el-text type="danger" size="large">开门失败</el-text>
+        <code style="color:grey;font-size:14px">请联系所在单位备案个人信息</code>
+      </div>
+      <div v-else class="open-warpper">
+        <div class="loading"></div>
+        <code style="color:grey;font-size:16px">请稍等 ~</code>
+      </div>
+    </div>
+  </script>
+  <!-- 首页 -->
+  <script src="./comp/home.js"></script>
+  <!-- main.js -->
+  <script src="./main.js"></script>
+</body>
+
+</html>
