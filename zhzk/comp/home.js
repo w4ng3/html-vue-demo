@@ -15,7 +15,7 @@ const Home = {
      */
     const status = ref('loading')
 
-    // 获取当前url的params参数
+    // 获取当前url的params参数，微信重定向后会丢失哈希路由
     function getParams() {
       let url = window.location.href;
       let params = {};

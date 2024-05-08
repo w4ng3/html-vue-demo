@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <div id="app">
+    <h1>{{msg}}</h1>
+    <warning-widget></warning-widget>
+    <banner></banner>
+    <component is="Login"></component>
+  </div>
+
+  <template id="Login">
+    <h3>登录组件</h3>
+  </template>
+
+  <script src="//unpkg.com/vue@3"></script>
+  <script>
+    const { ref, onMounted } = Vue;
+    const app = Vue.createApp({
+      components: {
+        // 创建组件
+        Login: {
+          template: '#Login'
+        },
+        Banner: {
+          template: `<div>{{msg}}</div>`,
+          setup() {
+            return {
+              msg: 'Custom Widget'
+            }
+          }
+        },
+      },
+      setup(props) {
+        return {
+          msg: 'Banner P@'
+        }
+      }
+    });
+    // 注册组件
+    app.component('warning-widget', {
+      setup() {
+        const val = ref(0)
+        onMounted(() => {
+          val.value = 123
+        })
+        return {
+          val
+        };
+      },
+      template: '<h2>FBI WARNING {{val}}</h2>',
+    })
+    const vm = app.mount('#app');
+  </script>
+</body>
+
+</html>

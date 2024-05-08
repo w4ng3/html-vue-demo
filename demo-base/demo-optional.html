@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <div id="app">
+      <warning-widget></warning-widget>
+      <!-- 点击后设置comName为不同值 -->
+      <a href="" @click.prevent="comName='Login'" style="padding-right: 20px;">登录</a>
+      <a href="" @click.prevent="comName='Register'">注册</a>
+      <!-- 此处的comName是变量，变量值为组件名称 -->
+      <component :is="comName"></component>
+
+      <banner></banner>
+  </div>
+
+  <template id="Login">
+      <h3>登录组件</h3>
+  </template>
+
+  <template id="Register">
+      <h3>注册组件</h3>
+  </template>
+
+  <script src="//unpkg.com/vue@3"></script>
+  <script>
+      const app = Vue.createApp({
+          data() {
+              return {
+                  comName: 'Login',
+              }
+          },
+          components:{
+              // 创建组件
+              Banner: {
+                  template: `<div>{{msg}}</div>`,
+                  data(){
+                      return {
+                          msg: 'Banner P@'
+                      }
+                  }
+              },
+          }
+      });
+      app.component('Login', {
+          template: '#Login'
+      })
+      app.component('Register', {
+          template: '#Register'
+      })
+      app.component('warning-widget', {
+          template:'<h2>FBI WARNING OPEN THE DOOR</h2>'
+      })
+      const vm = app.mount('#app');
+  </script>
+</body>
+</html>

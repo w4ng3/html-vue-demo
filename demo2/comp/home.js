@@ -9,18 +9,21 @@ const Home = {
       console.log('param', param);
       // let decodedData = window.atob(param) //base64解密
       // ----------------
-      apipost(`/note/getShareNote?params=${param}`, {}).then(res => {
-        if (res.code == 0) {
-          let data = res.data
-          note.nickname = data.nickname
-          note.avatar = data.avatar
-          note.time = TimestampToDate(data.timestamp)
-          note.noteId = data.noteId
-          note.content = data.content
-          note.resourceList = data.resourceList
-          note.title = data.title
-        }
+      apiget(`/`, {}).then(res => {
+        console.log('res :>> ', res);
       }).catch(err => { alert('网络错误') })
+      // apipost(`/note/getShareNote?params=${param}`, {}).then(res => {
+      //   if (res.code == 0) {
+      //     let data = res.data
+      //     note.nickname = data.nickname
+      //     note.avatar = data.avatar
+      //     note.time = TimestampToDate(data.timestamp)
+      //     note.noteId = data.noteId
+      //     note.content = data.content
+      //     note.resourceList = data.resourceList
+      //     note.title = data.title
+      //   }
+      // }).catch(err => { alert('网络错误') })
     })
     const note = reactive({
 

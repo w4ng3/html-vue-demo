@@ -1,5 +1,6 @@
 // ---
-axios.defaults.baseURL = 'https://www.fastmock.site/mock/823603c19da381d3b926d34331f6cfb7/gg-api';
+// axios.defaults.baseURL = 'https://www.fastmock.site/mock/823603c19da381d3b926d34331f6cfb7/gg-api';
+axios.defaults.baseURL = 'http://127.0.0.1:3000/api'
 // axios.defaults.headers.common['token'] = sessionStorage.getItem("token");
 //axios封装post请求
 function apipost(url, data) {
